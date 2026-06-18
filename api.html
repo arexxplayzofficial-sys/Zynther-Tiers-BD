@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zynther Tiers - API Documentation</title>
+<meta name="description" content="Zynther Tiers API documentation for developers looking to fetch Minecraft PvP rankings.">
+<link rel="icon" href="ZyntherTier.png" type="image/png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  :root { 
+    --bg: #10151e; 
+    --surface: #141a26; 
+    --surface2: #1e2536; 
+    --primary: #5294e2; 
+    --primary2: #3569a8; 
+    --text: #b0b9c6; 
+    --text2: #6c7a91; 
+    --white: #ffffff; 
+    --discord: #5865F2; 
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', sans-serif; }
+  body { 
+    background-color: var(--bg); 
+    color: var(--text); 
+    min-height: 100vh; 
+    background-image: radial-gradient(circle at 50% -20%, #172237 0%, #10151e 70%);
+    background-attachment: fixed; 
+  }
+
+  /* ── HEADER ── */
+  header { background: rgba(20, 26, 38, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--surface2); padding: 0 24px; position: sticky; top: 0; z-index: 100; }
+  .nav-container { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--primary), var(--primary2)); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--white); font-weight: bold; font-size: 14px; }
+  .logo-text { font-size: 20px; font-weight: 800; color: var(--white); letter-spacing: -0.5px; }
+  .logo-text span { color: var(--primary); }
+  .nav-links { display: flex; gap: 20px; align-items: center; }
+  .nav-links a { color: var(--text2); text-decoration: none; font-weight: 500; font-size: 14px; transition: color 0.2s; display: flex; align-items: center; gap: 6px; }
+  .nav-links a:hover { color: var(--primary); }
+  .nav-active { color: var(--primary) !important; }
+
+  /* ── LAYOUT ── */
+  .page-layout { max-width: 1000px; margin: 0 auto; padding: 24px; }
+  
+  h1 { font-size: 36px; font-weight: 800; color: var(--white); margin-bottom: 8px; letter-spacing: -0.5px; }
+  h1 span { color: var(--primary); }
+  .subtitle { font-size: 15px; color: var(--text2); margin-bottom: 32px; line-height: 1.6; }
+
+  /* ── API CARDS ── */
+  .api-section { background: var(--surface); border: 1px solid var(--surface2); border-radius: 10px; padding: 24px; margin-bottom: 24px; }
+  
+  .endpoint-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .method { padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 800; font-family: monospace; letter-spacing: 0.5px; }
+  .get { background: rgba(82, 148, 226, 0.15); color: var(--primary); border: 1px solid rgba(82, 148, 226, 0.2); }
+  .route { font-family: monospace; font-size: 15px; color: var(--white); font-weight: 700; }
+  
+  .desc { color: var(--text); font-size: 13.5px; margin-bottom: 16px; line-height: 1.5; }
+  
+  .code-block { background: #0d111a; border: 1px solid var(--surface2); border-radius: 8px; padding: 18px; font-family: monospace; font-size: 13px; color: #a5b9d6; overflow-x: auto; position: relative; line-height: 1.6; }
+  .copy-code { position: absolute; top: 10px; right: 10px; background: var(--surface2); border: 1px solid rgba(255,255,255,0.05); color: var(--text2); padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .copy-code:hover { background: var(--primary2); color: var(--white); }
+
+  footer { text-align: center; padding: 24px; color: var(--text2); font-size: 12px; border-top: 1px solid var(--surface2); margin-top: 40px; }
+  footer a { color: var(--primary); text-decoration: none; }
+  .footer-api { margin-top: 4px; font-size: 11px; }
+
+  @media(max-width:600px) { .nav-links a span { display:none; } h1 { font-size: 28px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav-container">
+    <a href="index.html" class="logo">
+      <div class=""></div>
+      <img src="ZyntherTiersBd.png" width="300">
+      <div class="logo-text"><span></span></div>
+    </a>
+    <div class="nav-links">
+      <a href="home.html"><i class="fas fa-home"></i> <span>Home</span></a>
+      <a href="index.html"><i class="fas fa-trophy"></i> <span>Rankings</span></a>
+      <a href="api.html" class="nav-active"><i class="fas fa-book"></i> API Docs</a>
+      <a href="discord.html"><i class="fab fa-discord"></i> <span>Discord</span></a>
+      <a href="information.html"><i class="fas fa-info-circle"></i> <span>Information</span></a>
+    </div>
+  </nav>
+</header>
+
+<div class="page-layout">
+  <main class="main-content">
+    <h1>API <span>Documentation</span></h1>
+    <p class="subtitle">Integrate live Zynther Tiers rankings into your own client applications or discord bots.</p>
+
+    <section class="api-section">
+      <div class="endpoint-header">
+        <span class="method get">GET</span>
+        <span class="route">/api/v1/overall</span>
+      </div>
+      <p class="desc">Fetches the complete overall leaderboard including player points, titles, regions, and sub-category tiers.</p>
+      <div class="code-block">
+        <button class="copy-code" onclick="copyCode(this)">Copy</button>
+        {<br>
+        &nbsp;&nbsp;"rank": ,<br>
+        &nbsp;&nbsp;"name": "",<br>
+        &nbsp;&nbsp;"title": "",<br>
+        &nbsp;&nbsp;"points": ,<br>
+        &nbsp;&nbsp;"region": "",<br>
+        &nbsp;&nbsp;"tiers": {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;"sword": "",<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;"smp": "",<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;"pot": ""<br>
+        &nbsp;&nbsp;}<br>
+        }
+      </div>
+    </section>
+
+    <section class="api-section">
+      <div class="endpoint-header">
+        <span class="method get">GET</span>
+        <span class="route">/api/v1/category/{category}</span>
+      </div>
+      <p class="desc">Fetches the tier list for a specific combat category. Replace <code>{category}</code> with: <code>vanilla</code>, <code>uhc</code>, <code>pot</code>, <code>nethop</code>, <code>smp</code>, <code>sword</code>, <code>axe</code>, or <code>mace</code>.</p>
+      <div class="code-block">
+        <button class="copy-code" onclick="copyCode(this)">Copy</button>
+        {<br>
+        &nbsp;&nbsp;"tier": ,<br>
+        &nbsp;&nbsp;"players": [<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;{ "name": "", "region": "" }<br>
+        &nbsp;&nbsp;]<br>
+        }
+      </div>
+    </section>
+
+    <section class="api-section">
+      <div class="endpoint-header">
+        <span class="method get">GET</span>
+        <span class="route">/api/v1/player/{username}</span>
+      </div>
+      <p class="desc">Looks up a specific player by their Minecraft username. Returns all their ranking data across every category.</p>
+      <div class="code-block">
+        <button class="copy-code" onclick="copyCode(this)">Copy</button>
+        {<br>
+        &nbsp;&nbsp;"name": "",<br>
+        &nbsp;&nbsp;"title": "",<br>
+        &nbsp;&nbsp;"points": ,<br>
+        &nbsp;&nbsp;"region": "",<br>
+        &nbsp;&nbsp;"tiers": { ... }<br>
+        }
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <p>&copy; 2026 Zynther Tiers. All rights reserved.</p>
+  <p class="footer-api"><a href=""></a></p>
+</footer>
+
+<script>
+  function copyCode(button) {
+    const codeBlock = button.parentElement;
+    const text = codeBlock.innerText.replace('Copy', '').trim();
+    navigator.clipboard.writeText(text);
+    button.textContent = "Copied!";
+    setTimeout(() => { button.textContent = "Copy"; }, 2000);
+  }
+</script>
+</body>
+</html>

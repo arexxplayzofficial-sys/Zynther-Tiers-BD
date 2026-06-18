@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zynther Tiers - Admin Panel</title>
+<meta name="description" content="Mythic Tiers is the definitive ranking system for Minecraft PvP players.">
+<link rel="icon" href="ZyntherTier.png" type="image/png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root { 
+    --bg: #10151e; 
+    --surface: #141a26; 
+    --surface2: #1e2536; 
+    --primary: #5294e2; 
+    --primary2: #3569a8; 
+    --text: #b0b9c6; 
+    --text2: #6c7a91; 
+    --white: #ffffff; 
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', sans-serif; }
+  body { 
+    background-color: var(--bg); 
+    color: var(--text); 
+    min-height: 100vh; 
+    background-image: radial-gradient(circle at 50% -20%, #172237 0%, #10151e 70%);
+    background-attachment: fixed; 
+  }
+
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* ── HEADER ── */
+  header { background: rgba(20, 26, 38, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--surface2); padding: 0 24px; position: sticky; top: 0; z-index: 100; }
+  .nav-container { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--primary), var(--primary2)); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--white); font-weight: bold; font-size: 14px; }
+  .logo-text { font-size: 20px; font-weight: 800; color: var(--white); letter-spacing: -0.5px; }
+  .logo-text span { color: var(--primary); }
+  .nav-links { display: flex; gap: 20px; align-items: center; }
+  .nav-links a { color: var(--text2); text-decoration: none; font-weight: 500; font-size: 14px; transition: color 0.2s; display: flex; align-items: center; gap: 6px; }
+  .nav-links a:hover { color: var(--primary); }
+  .nav-active { color: var(--primary) !important; }
+
+  /* ── LAYOUT ── */
+  .page-layout { max-width: 1000px; margin: 0 auto; padding: 24px; }
+  h1 { color: var(--white); font-size: 26px; font-weight: 800; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; letter-spacing: -0.5px; }
+  h1 i { color: var(--primary); }
+
+  /* ── CARDS & BOXES ── */
+  .card { background: var(--surface); border: 1px solid var(--surface2); border-radius: 12px; padding: 24px; margin-bottom: 24px; animation: fadeIn 0.5s ease-out; }
+  .card h2 { color: var(--white); font-size: 16px; font-weight: 700; margin-bottom: 16px; border-bottom: 1px solid var(--surface2); padding-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .card h2 i { color: var(--primary); }
+  .card p { font-size: 13px; color: var(--text2); line-height: 1.5; }
+
+  /* ── BUTTONS ── */
+  .btn { padding: 10px 20px; border-radius: 6px; border: none; font-weight: 700; cursor: pointer; font-size: 13px; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .btn-primary { background: var(--primary2); color: var(--white); } 
+  .btn-primary:hover { background: var(--primary); }
+  .btn-danger { background: #b71c1c; color: white; } 
+  .btn-danger:hover { background: #e53935; }
+  .btn-secondary { background: var(--surface2); color: var(--white); border: 1px solid #2d384d; } 
+  .btn-secondary:hover { background: #232b3d; border-color: var(--primary2); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ── FORMS ── */
+  .form-row { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 140px; }
+  .form-group label { font-size: 10px; color: var(--text2); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+  .form-group input, .form-group select { background: #0d111a; border: 1px solid var(--surface2); border-radius: 6px; padding: 10px; color: var(--white); font-size: 14px; outline: none; transition: border-color 0.2s; }
+  .form-group input:focus, .form-group select:focus { border-color: var(--primary2); }
+  .form-group input::placeholder { color: #47546a; }
+
+  /* ── TABLES ── */
+  .player-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  .player-table th { text-align: left; color: #515f75; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; padding: 12px 8px; border-bottom: 1px solid var(--surface2); }
+  .player-table td { padding: 12px 8px; border-bottom: 1px solid #141a26; font-size: 14px; vertical-align: middle; }
+  .player-table tr:hover td { background: rgba(255,255,255,0.01); }
+  
+  /* ── BADGES ── */
+  .badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; display: inline-block; margin-right: 4px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .badge-title { background: rgba(82, 148, 226, 0.15); color: var(--primary); border: 1px solid rgba(82, 148, 226, 0.3); }
+  
+  /* HT/LT Badge styling alignment with rankings theme */
+  .badge-ht1 { background: rgba(255,87,34,0.18); color: #ff5722; } 
+  .badge-ht2 { background: rgba(255,152,0,0.18); color: #ff9800; }
+  .badge-ht3 { background: rgba(255,193,7,0.18); color: #ffc107; } 
+  .badge-ht4 { background: rgba(139,195,74,0.18); color: #8bc34a; }
+  .badge-lt1 { background: rgba(76,175,80,0.18); color: #4caf50; } 
+  .badge-lt2 { background: rgba(33,150,243,0.18); color: #2196f3; } 
+  .badge-lt3 { background: rgba(103,58,183,0.18); color: #673ab7; }
+  .badge-lt4 { background: rgba(63,81,181,0.18); color: #3f51b5; }
+
+  /* ── LOGIN BOX ── */
+  .login-box { max-width: 400px; margin: 80px auto; padding: 32px; background: var(--surface); border: 1px solid var(--surface2); border-radius: 12px; text-align: center; animation: fadeInUp 0.4s ease-out; }
+  .login-box h2 { color: var(--white); font-size: 20px; margin-bottom: 8px; font-weight: 800; }
+  .login-box p { color: var(--text2); font-size: 13px; margin-bottom: 20px; }
+  .login-box input { width: 100%; padding: 12px; margin-bottom: 16px; background: #0d111a; border: 1px solid var(--surface2); border-radius: 6px; color: white; font-size: 15px; outline: none; text-align: center; }
+  .login-box input:focus { border-color: var(--primary2); }
+  .login-box .btn { width: 100%; justify-content: center; }
+  
+  #importStatus, #saveStatus { font-size: 13px; font-weight: 600; margin-top: 12px; display: flex; align-items: center; gap: 6px; }
+  .success { color: #4caf50; }
+  .error { color: #f44336; }
+
+  footer { text-align: center; padding: 24px; color: var(--text2); font-size: 12px; border-top: 1px solid var(--surface2); margin-top: 40px; }
+  @media(max-width:600px) { .nav-links a span { display:none; } }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav-container">
+    <a href="index.html" class="logo">
+      <div class=""></div>
+<img src="ZyntherTiersBd.png" width="300">
+      <div class="logo-text"><span></span></div>
+    </a>
+    <div class="nav-links">
+      <a href="home.html"><i class="fas fa-home"></i> <span>Home</span></a>
+      <a href="index.html"><i class="fas fa-trophy"></i> <span>Rankings</span></a>
+      <a href="admin.html" class="nav-active"><i class="fas fa-cog"></i> <span>Admin</span></a>
+    </div>
+  </nav>
+</header>
+
+<div class="page-layout">
+  <!-- Login State View -->
+  <div id="loginView" class="login-box">
+    <h2>Admin Authorization</h2>
+    <p>Enter administrative credential passphrase to proceed</p>
+    <input type="password" id="passwordInput" placeholder="••••••••" onkeydown="if(event.key === 'Enter') attemptLogin()">
+    <button class="btn btn-primary" onclick="attemptLogin()">Log In</button>
+  </div>
+
+  <!-- Dashboard State View -->
+  <div id="dashboardView" style="display: none;">
+    <h1><i class="fas fa-tools"></i> API Admin Dashboard</h1>
+
+    <div class="card">
+      <h2><i class="fas fa-sync-alt"></i> Global Import Integration</h2>
+      <p style="margin-bottom: 16px;">
+        Synchronize top data sets dynamically across structural matchmaking ladders from global benchmark servers.
+      </p>
+      <button class="btn btn-primary" id="importBtn" onclick="importFromMctiers()">
+        <i class="fas fa-sync-alt"></i> Import Top 50 Players
+      </button>
+      <div id="importStatus"></div>
+    </div>
+
+    <div class="card">
+      <h2><i class="fas fa-user-plus"></i> Add / Edit Player Manually</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="f_username" placeholder="e.g. ItzRealMe" required>
+        </div>
+        <div class="form-group">
+          <label>Region</label>
+          <select id="f_region">
+            <option value="NA">NA</option>
+            <option value="EU">EU</option>
+            <option value="AS">AS</option>
+            <option value="AU">AU</option>
+            <option value="SA">SA</option>
+            <option value="ME">ME</option>
+            <option value="AF">AF</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Custom Title / Rank</label>
+          <input type="text" id="f_title" placeholder="Comming Soon">
+        </div>
+        <div class="form-group">
+          <label>Points</label>
+          <input type="number" id="f_points" placeholder="0" value="0">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Vanilla</label><input type="text" id="f_vanilla" placeholder="HT1 / LT3"></div>
+        <div class="form-group"><label>UHC</label><input type="text" id="f_uhc" placeholder="e.g. LT1"></div>
+        <div class="form-group"><label>Pot</label><input type="text" id="f_pot" placeholder="e.g. HT2"></div>
+        <div class="form-group"><label>NethOP</label><input type="text" id="f_nethop" placeholder="e.g. LT2"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>SMP</label><input type="text" id="f_smp" placeholder="e.g. HT1"></div>
+        <div class="form-group"><label>Sword</label><input type="text" id="f_sword" placeholder="e.g. HT3"></div>
+        <div class="form-group"><label>Axe</label><input type="text" id="f_axe" placeholder="e.g. LT2"></div>
+        <div class="form-group"><label>Mace</label><input type="text" id="f_mace" placeholder="e.g. LT1"></div>
+      </div>
+      <button class="btn btn-secondary" onclick="savePlayer()" style="margin-top:8px;">
+        <i class="fas fa-save"></i> Save Player Data
+      </button>
+      <div id="saveStatus"></div>
+    </div>
+
+    <div class="card">
+      <h2><i class="fas fa-database"></i> Database Index Entries</h2>
+      <div style="overflow-x: auto;">
+        <table class="player-table">
+          <thead>
+            <tr>
+              <th>Username</th><th>Region</th><th>Points</th><th>Active Tiers & Titles</th><th style="width:60px; text-align:right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="playerTableBody">
+            <tr><td colspan="5" style="text-align:center; color:var(--text2); padding: 32px 0;"><i class="fas fa-spinner fa-spin"></i> Initializing database stream...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2026 Zynther Tiers. All rights reserved.</p>
+</footer>
+
+<script>
+  const SUPABASE_URL = 'https://bdvqeqesjbrtvtphrtru.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkdnFlcWVzamJydHZ0cGhydHJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNjE4MzEsImV4cCI6MjA5NjgzNzgzMX0.timXkP4DcIOtQnS2np3YWME_o8m5iq_DrFbKPCHl5vA';
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const dbCategories = ['vanilla', 'uhc', 'pot', 'nethop', 'smp', 'sword', 'axe', 'mace'];
+  let isAdmin = false;
+
+  function attemptLogin() {
+    const pass = document.getElementById('passwordInput').value;
+    const storedPass = localStorage.getItem('pvp_admin_pass') || 'Admin1234';
+    if (pass === storedPass) {
+      isAdmin = true;
+      document.getElementById('loginView').style.display = 'none';
+      document.getElementById('dashboardView').style.display = 'block';
+      loadPlayers();
+    } else {
+      alert('Incorrect Authentication Passphrase!');
+    }
+  }
+
+  async function loadPlayers() {
+    const { data, error } = await db.from('players').select('*').order('points', { ascending: false });
+    const tbody = document.getElementById('playerTableBody');
+    
+    if (error || !data) {
+      tbody.innerHTML = `<tr><td colspan="5" class="error" style="text-align:center;"><i class="fas fa-exclamation-circle"></i> Error querying structural tables.</td></tr>`;
+      return;
+    }
+    if (data.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text2); padding: 24px 0;">No index records established. Invoke the engine synchronization tool wrapper.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = data.map(p => {
+      let tiersHtml = '';
+      
+      if (p.title && p.title.trim() !== '') {
+        tiersHtml += `<span class="badge badge-title"><i class="fas fa-star" style="font-size:9px"></i> ${p.title}</span> `;
+      }
+
+      dbCategories.forEach(cat => {
+        if (p[cat] && p[cat].trim() !== '') {
+          const tierStr = p[cat].toUpperCase();
+          tiersHtml += `<span class="badge badge-${tierStr.toLowerCase()}">${cat}: ${tierStr}</span> `;
+        }
+      });
+
+      return `<tr>
+        <td style="font-weight:700; color:var(--white);">${p.username}</td>
+        <td><span style="color:var(--text); font-weight:600;">${p.region || 'NA'}</span></td>
+        <td style="color:var(--primary); font-weight:700;">${p.points || 0}</td>
+        <td>${tiersHtml || '<span style="color:#353f52">—</span>'}</td>
+        <td style="text-align:right;"><button class="btn btn-danger" style="padding:6px 10px; font-size:11px;" onclick="deletePlayer(${p.id}, '${p.username}')"><i class="fas fa-trash"></i></button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  async function deletePlayer(id, name) {
+    if(!confirm(`Confirm permanent erasure of entry matching identifier: ${name}?`)) return;
+    const { error } = await db.from('players').delete().eq('id', id);
+    if (!error) { loadPlayers(); } else { alert('Transaction context rolled back. Erasure error.'); }
+  }
+
+  async function savePlayer() {
+    const username = document.getElementById('f_username').value.trim();
+    if (!username) return alert("System requires valid unique player moniker constraint!");
+
+    const playerData = {
+      username: username,
+      region: document.getElementById('f_region').value,
+      title: document.getElementById('f_title').value.trim(),
+      points: parseInt(document.getElementById('f_points').value) || 0,
+      vanilla: document.getElementById('f_vanilla').value.toUpperCase().trim(),
+      uhc: document.getElementById('f_uhc').value.toUpperCase().trim(),
+      pot: document.getElementById('f_pot').value.toUpperCase().trim(),
+      nethop: document.getElementById('f_nethop').value.toUpperCase().trim(),
+      smp: document.getElementById('f_smp').value.toUpperCase().trim(),
+      sword: document.getElementById('f_sword').value.toUpperCase().trim(),
+      axe: document.getElementById('f_axe').value.toUpperCase().trim(),
+      mace: document.getElementById('f_mace').value.toUpperCase().trim()
+    };
+
+    const { error } = await db.from('players').upsert(playerData, { onConflict: 'username' });
+    const statusDiv = document.getElementById('saveStatus');
+
+    if (error) {
+      statusDiv.innerHTML = `<span class="error"><i class="fas fa-times-circle"></i> Pipeline Fault: ${error.message}</span>`;
+    } else {
+      statusDiv.innerHTML = `<span class="success"><i class="fas fa-check-circle"></i> Commit updated structural data for: ${username}</span>`;
+      document.querySelectorAll('.form-group input').forEach(inp => inp.value = '');
+      document.getElementById('f_points').value = '0';
+      loadPlayers();
+    }
+    setTimeout(() => statusDiv.innerHTML = '', 4000);
+  }
+
+  async function importFromMctiers() {
+    const btn = document.getElementById('importBtn');
+    const statusDiv = document.getElementById('importStatus');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Execution Intercepted...';
+    statusDiv.innerHTML = `<span style="color:var(--text2)"><i class="fas fa-cloud-download-alt"></i> Aggregating tracking matrices via external endpoints...</span>`;
+
+    try {
+      const res = await fetch('https://mctiers.com/api/v2/mode/overall?count=50');
+      if (!res.ok) throw new Error('Remote directory execution failed.');
+      const mctiersData = await res.json();
+
+      const formattedData = mctiersData.map(p => {
+        let obj = { username: p.name, region: p.region, points: p.points };
+        if (p.rankings) {
+          for (const [key, rank] of Object.entries(p.rankings)) {
+            if (dbCategories.includes(key)) {
+              const prefix = rank.pos === 0 ? 'HT' : 'LT';
+              obj[key] = `${prefix}${rank.tier}`;
+            }
+          }
+        }
+        return obj;
+      });
+
+      const { error } = await db.from('players').upsert(formattedData, { onConflict: 'username' });
+      if (error) throw error;
+
+      statusDiv.innerHTML = `<span class="success"><i class="fas fa-check-circle"></i> Transaction Successful: Overwrote ${formattedData.length} records.</span>`;
+      loadPlayers();
+
+    } catch (err) {
+      console.error(err);
+      statusDiv.innerHTML = `<span class="error"><i class="fas fa-exclamation-triangle"></i> Execution Fault: ${err.message}. Check CORS network contexts.</span>`; 
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-sync-alt"></i> Import Top 50 Players';
+    }
+  }
+</script>
+</body>
+</html>

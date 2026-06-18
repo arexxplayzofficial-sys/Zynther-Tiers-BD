@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zynther Tiers - Home</title>
+<meta name="description" content="Mythic Tiers is the definitive ranking system for Minecraft PvP players.">
+<link rel="icon" href="zynthertier.png" type="image/png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  :root { 
+    --bg: #10151e; 
+    --surface: #141a26; 
+    --surface2: #1e2536; 
+    --primary: #5294e2; 
+    --primary2: #3569a8; 
+    --text: #b0b9c6; 
+    --text2: #6c7a91; 
+    --white: #ffffff; 
+    --discord: #5865F2; 
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', sans-serif; }
+  body { 
+    background-color: var(--bg); 
+    color: var(--text); 
+    min-height: 100vh; 
+    background-image: radial-gradient(circle at 50% -20%, #172237 0%, #10151e 70%);
+    background-attachment: fixed; 
+    overflow-x: hidden;
+  }
+
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(82,148,226,0.3)} 50%{box-shadow:0 0 0 12px rgba(82,148,226,0)} }
+  @keyframes scan { 0%{transform:translateY(-100%)} 100%{transform:translateY(400%)} }
+
+  /* ── HEADER ── */
+  header { background: rgba(20, 26, 38, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--surface2); padding: 0 24px; position: sticky; top: 0; z-index: 100; }
+  .nav-container { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--primary), var(--primary2)); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--white); font-weight: bold; font-size: 14px; }
+  .logo-text { font-size: 20px; font-weight: 800; color: var(--white); letter-spacing: -0.5px; }
+  .logo-text span { color: var(--primary); }
+  .nav-links { display: flex; gap: 20px; align-items: center; }
+  .nav-links a { color: var(--text2); text-decoration: none; font-weight: 500; font-size: 14px; transition: color 0.2s; display: flex; align-items: center; gap: 6px; }
+  .nav-links a:hover { color: var(--primary); }
+  .nav-active { color: var(--primary) !important; }
+
+  /* ── HERO ── */
+  .hero { position: relative; min-height: 75vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .hero-bg-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(82,148,226,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(82,148,226,0.03) 1px, transparent 1px); background-size: 48px 48px; mask-image: radial-gradient(ellipse at 50% 50%, black 30%, transparent 80%); }
+  .hero-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(82,148,226,0.05) 0%, transparent 70%); pointer-events: none; }
+  .hero-content { position: relative; z-index: 2; text-align: center; padding: 48px 24px; max-width: 780px; animation: fadeInUp 0.7s ease-out; }
+  .hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: rgba(82,148,226,0.08); border: 1px solid rgba(82,148,226,0.2); border-radius: 20px; padding: 6px 16px; font-size: 12px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 24px; }
+  .hero-eyebrow-dot { width: 6px; height: 6px; background: var(--primary); border-radius: 50%; animation: pulse 2s infinite; }
+  .hero-title { font-size: clamp(40px, 7vw, 72px); font-weight: 900; line-height: 1.1; letter-spacing: -1.5px; color: var(--white); margin-bottom: 20px; }
+  .hero-title .accent { background: linear-gradient(135deg, var(--primary), var(--primary2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero-sub { font-size: 16px; color: var(--text); line-height: 1.7; max-width: 540px; margin: 0 auto 36px; font-weight: 400; }
+  .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary { display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, var(--primary), var(--primary2)); color: var(--white); padding: 13px 26px; border-radius: 8px; font-weight: 800; font-size: 14px; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 20px rgba(82,148,226,0.2); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(82,148,226,0.35); }
+  .btn-secondary { display: inline-flex; align-items: center; gap: 10px; background: var(--surface); color: var(--white); padding: 13px 26px; border-radius: 8px; font-weight: 700; font-size: 14px; text-decoration: none; border: 1px solid var(--surface2); transition: all 0.2s; }
+  .btn-secondary:hover { border-color: var(--primary2); background: var(--surface2); transform: translateY(-2px); }
+
+  /* ── STATS STRIP ── */
+  .stats-strip { background: var(--surface); border-top: 1px solid var(--surface2); border-bottom: 1px solid var(--surface2); padding: 20px 24px; }
+  .stats-inner { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; text-align: center; }
+  .stat-item .num { font-size: 26px; font-weight: 900; color: var(--white); letter-spacing: -0.5px; }
+  .stat-item .num span { color: var(--primary); }
+  .stat-item .lbl { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; margin-top: 4px; }
+
+  /* ── SECTION COMMON ── */
+  .section { max-width: 1000px; margin: 0 auto; padding: 60px 24px; }
+  .section-label { font-size: 11px; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-bottom: 12px; }
+  .section-title { font-size: clamp(24px, 4vw, 34px); font-weight: 800; color: var(--white); letter-spacing: -0.8px; line-height: 1.2; margin-bottom: 14px; }
+  .section-sub { font-size: 14px; color: var(--text); line-height: 1.6; max-width: 500px; }
+
+  /* ── TOP PLAYERS ── */
+  .top-players-wrap { display: grid; grid-template-columns: 1fr 1.3fr; gap: 48px; align-items: center; }
+  .top-players-list { display: flex; flex-direction: column; gap: 12px; }
+  .top-player-card { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--surface2); border-radius: 10px; padding: 12px 16px; cursor: pointer; transition: all 0.2s; text-decoration: none; animation: fadeInUp 0.5s ease-out both; }
+  .top-player-card:hover { border-color: var(--primary2); transform: translateX(4px); }
+  .top-player-card.rank-1 { border-left: 3px solid #ffc107; background: rgba(255,193,7,0.03); }
+  .top-player-card.rank-2 { border-left: 3px solid #b0bec5; background: rgba(176,190,197,0.03); }
+  .top-player-card.rank-3 { border-left: 3px solid #ff9800; background: rgba(255,152,0,0.03); }
+  .tp-rank { font-size: 20px; font-weight: 900; font-style: italic; min-width: 28px; text-align: center; color: #47546a; }
+  .rank-1 .tp-rank { color: #ffc107; } .rank-2 .tp-rank { color: #b0bec5; } .rank-3 .tp-rank { color: #ff9800; }
+  .tp-skin { width: 36px; height: 36px; image-rendering: pixelated; border-radius: 4px; background: #0d111a; object-fit: cover; object-position: top; }
+  .tp-info { flex: 1; min-width: 0; }
+  .tp-name { font-weight: 700; color: var(--white); font-size: 15px; }
+  .tp-pts { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .tp-region { font-size: 11px; font-weight: 800; background: var(--bg); padding: 4px 8px; border-radius: 5px; border: 1px solid var(--surface2); color: var(--primary); }
+
+  /* ── GAMEMODES ── */
+  .modes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin-top: 36px; }
+  .mode-card { background: var(--surface); border: 1px solid var(--surface2); border-radius: 10px; padding: 24px 20px; text-align: center; transition: all 0.2s; animation: fadeInUp 0.5s ease-out both; text-decoration: none; display: block; }
+  .mode-card:hover { border-color: var(--primary2); transform: translateY(-4px); }
+  .mode-card:hover .mode-name { color: var(--primary); }
+  .mode-icon { width: 32px; height: 32px; margin: 0 auto 12px; display: block; transition: transform 0.2s; }
+  .mode-card:hover .mode-icon { transform: scale(1.1); }
+  .mode-name { font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 6px; transition: color 0.2s; }
+  .mode-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+  /* ── HOW IT WORKS ── */
+  .how-wrap { background: var(--surface); border: 1px solid var(--surface2); border-radius: 12px; padding: 40px; }
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 32px; }
+  .step { text-align: center; }
+  .step-num { width: 40px; height: 40px; background: linear-gradient(135deg, rgba(82,148,226,0.15), rgba(53,105,168,0.08)); border: 1px solid var(--primary2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; color: var(--primary); margin: 0 auto 14px; }
+  .step-title { font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 6px; }
+  .step-desc { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+  /* ── SERVER JOIN ── */
+  .join-section { background: linear-gradient(135deg, rgba(20, 26, 38, 0.8), rgba(82,148,226,0.03)); border: 1px solid var(--surface2); border-radius: 12px; padding: 48px 40px; text-align: center; position: relative; overflow: hidden; }
+  .join-title { font-size: 28px; font-weight: 900; color: var(--white); letter-spacing: -0.5px; margin-bottom: 10px; }
+  .join-sub { font-size: 14px; color: var(--text2); margin-bottom: 24px; }
+  .join-ip { display: inline-flex; align-items: center; gap: 12px; background: var(--bg); border: 1px solid var(--primary2); border-radius: 8px; padding: 10px 18px; margin-bottom: 24px; }
+  .join-ip-text { font-family: monospace; font-size: 18px; font-weight: 800; color: var(--primary); letter-spacing: 0.5px; }
+  .copy-btn { background: var(--primary2); color: var(--white); border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 12px; transition: background 0.2s, transform 0.1s; }
+  .copy-btn:hover { background: var(--primary); }
+  .copy-btn:active { transform: scale(0.95); }
+  .join-version { font-size: 11px; color: var(--text2); margin-top: 12px; }
+
+  /* ── FOOTER ── */
+  footer { text-align: center; padding: 24px; color: var(--text2); font-size: 12px; border-top: 1px solid var(--surface2); margin-top: 40px; }
+  footer a { color: var(--primary); text-decoration: none; }
+
+  /* ── TOAST ── */
+  .toast { position: fixed; bottom: -60px; left: 50%; transform: translateX(-50%); background: var(--primary); color: var(--white); padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 700; z-index: 2000; transition: bottom 0.3s ease; }
+  .toast.show { bottom: 40px; }
+  .divider { border: none; border-top: 1px solid var(--surface2); max-width: 1000px; margin: 0 auto; }
+
+  @media(max-width:768px) {
+    .top-players-wrap { grid-template-columns: 1fr; gap: 32px; }
+    .steps { grid-template-columns: 1fr; gap: 24px; }
+    .stats-inner { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .how-wrap { padding: 32px 20px; }
+    .join-section { padding: 36px 20px; }
+    .nav-links a span { display: none; }
+  }
+  @media(max-width:480px) {
+    .modes-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav-container">
+    <a href="home.html" class="logo">
+      <div class=""></div>
+      <img src="ZyntherTiersBd.png" width="300">
+      <div class="logo-text"><span></span></div>
+    </a>
+    <div class="nav-links">
+      <a href="home.html" class="nav-active"><i class="fas fa-home"></i> <span>Home</span></a>
+      <a href="index.html"><i class="fas fa-trophy"></i> <span>Rankings</span></a>
+      <a href="api.html"><i class="fas fa-book"></i> API Docs</a>
+      <a href="discord.html"><i class="fab fa-discord"></i> <span>Discord</span></a>
+      <a href="information.html"><i class="fas fa-info-circle"></i> <span>Information</span></a>
+    </div>
+  </nav>
+</header>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">
+      <span class="hero-eyebrow-dot"></span>
+      Live Rankings · Real-Time API
+    </div>
+    <h1 class="hero-title">
+      The Definitive<br><span class="accent">Minecraft PvP</span><br>Ranking System
+    </h1>
+    <p class="hero-sub">Compete across 8 gamemodes. Earn your tier. Rise through the ranks on Mythic Tiers — where every fight counts.</p>
+    <div class="hero-cta">
+      <a href="index.html" class="btn-primary"><i class="fas fa-trophy"></i> View Rankings</a>
+      <a href="#gamemodes" class="btn-secondary"><i class="fas fa-gamepad"></i> Explore Gamemodes</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── STATS STRIP ── -->
+<div class="stats-strip">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="num" id="statPlayers"><span>—</span></div>
+      <div class="lbl">Ranked Players</div>
+    </div>
+    <div class="stat-item">
+      <div class="num"><span>8</span></div>
+      <div class="lbl">Gamemodes</div>
+    </div>
+    <div class="stat-item">
+      <div class="num"><span>5</span></div>
+      <div class="lbl">Tier Levels</div>
+    </div>
+    <div class="stat-item">
+      <div class="num"><span>Live</span></div>
+      <div class="lbl">API Updates</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOP PLAYERS ── -->
+<div class="section">
+  <div class="top-players-wrap">
+    <div>
+      <div class="section-label">Leaderboard</div>
+      <h2 class="section-title">Top Players This Season</h2>
+      <p class="section-sub">The highest-ranked competitors across all gamemodes. Check out their current points and titles standing.</p>
+      <a href="index.html" style="display:inline-flex;align-items:center;gap:8px;margin-top:20px;color:var(--primary);text-decoration:none;font-size:14px;font-weight:700;">Full Rankings <i class="fas fa-arrow-right" style="font-size:12px"></i></a>
+    </div>
+    <div class="top-players-list" id="topPlayersList">
+      <div style="color:var(--text2);font-size:13px;padding:16px;text-align:center"><i class="fas fa-spinner fa-spin"></i> Loading top players...</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ── GAMEMODES ── -->
+<div class="section" id="gamemodes">
+  <div class="section-label">Compete</div>
+  <h2 class="section-title">8 Gamemodes. One Ranking.</h2>
+  <p class="section-sub">Every gamemode has its own tier list. Master them all to climb the overall leaderboard.</p>
+  <div class="modes-grid">
+    <a href="index.html?tab=vanilla" class="mode-card" style="animation-delay:0ms">
+      <img src="/vanilla.svg" class="mode-icon" alt="Vanilla" onerror="this.style.display='none'">
+      <div class="mode-name">Vanilla</div>
+      <div class="mode-desc">Classic no-pot combat with raw skill</div>
+    </a>
+    <a href="index.html?tab=uhc" class="mode-card" style="animation-delay:60ms">
+      <img src="/uhc.svg" class="mode-icon" alt="UHC" onerror="this.style.display='none'">
+      <div class="mode-name">UHC</div>
+      <div class="mode-desc">High-stakes ultra hardcore fights</div>
+    </a>
+    <a href="index.html?tab=pot" class="mode-card" style="animation-delay:120ms">
+      <img src="/pot.svg" class="mode-icon" alt="Pot" onerror="this.style.display='none'">
+      <div class="mode-name">Pot</div>
+      <div class="mode-desc">Potion-based fast-paced PvP</div>
+    </a>
+    <a href="index.html?tab=nethop" class="mode-card" style="animation-delay:180ms">
+      <img src="/nethop.svg" class="mode-icon" alt="NethOP" onerror="this.style.display='none'">
+      <div class="mode-name">NethOP</div>
+      <div class="mode-desc">OP nether gear combat</div>
+    </a>
+    <a href="index.html?tab=smp" class="mode-card" style="animation-delay:240ms">
+      <img src="/smp.svg" class="mode-icon" alt="SMP" onerror="this.style.display='none'">
+      <div class="mode-name">SMP</div>
+      <div class="mode-desc">Survival multiplayer PvP</div>
+    </a>
+    <a href="index.html?tab=sword" class="mode-card" style="animation-delay:300ms">
+      <img src="/sword.svg" class="mode-icon" alt="Sword" onerror="this.style.display='none'">
+      <div class="mode-name">Sword</div>
+      <div class="mode-desc">Pure sword mechanics mastery</div>
+    </a>
+    <a href="index.html?tab=axe" class="mode-card" style="animation-delay:360ms">
+      <img src="/axe.svg" class="mode-icon" alt="Axe" onerror="this.style.display='none'">
+      <div class="mode-name">Axe</div>
+      <div class="mode-desc">Axe-based combat specialization</div>
+    </a>
+    <a href="index.html?tab=mace" class="mode-card" style="animation-delay:420ms">
+      <img src="/mace.svg" class="mode-icon" alt="Mace" onerror="this.style.display='none'">
+      <div class="mode-name">Mace</div>
+      <div class="mode-desc">Heavy weapon wind-up combat</div>
+    </a>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ── HOW IT WORKS ── -->
+<div class="section">
+  <div class="how-wrap">
+    <div class="section-label">How It Works</div>
+    <h2 class="section-title">Get Ranked in 3 Steps</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-title">Join the Server</div>
+        <div class="step-desc">Connect to <code style="color:var(--primary);font-family:monospace"></code> and jump into competitive match brackets.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-title">Compete & Prove Yourself</div>
+        <div class="step-desc">Fight ranked players across any of the 8 gamemodes. Your performance is evaluated by the tier ranking council.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-title">Earn Your Tier</div>
+        <div class="step-desc">Get placed into HT1–LT4 tiers per gamemode. Points accumulate into your overall rank and title.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── JOIN CTA ── -->
+<div class="section" style="padding-top:0">
+  <div class="join-section">
+    <h2 class="join-title">Ready to Compete?</h2>
+    <p class="join-sub">Join hundreds of players already climbing the Mythic Tiers leaderboard.</p>
+    <div>
+      <div class="join-ip">
+        <span class="join-ip-text">Comming Soon</span>
+        <button class="copy-btn" onclick="copyIP()"><i class="fas fa-copy"></i> Copy</button>
+      </div>
+    </div>
+    <div>
+      <a href="index.html" class="btn-primary" style="display:inline-flex"><i class="fas fa-trophy"></i> View Live Rankings</a>
+    </div>
+    <p class="join-version">Java Edition · All versions supported</p>
+  </div>
+</div>
+
+<div class="toast" id="toast">IP Copied!</div>
+
+<footer>
+  <p>&copy; 2026 Zynther Tiers. All rights reserved.</p>
+</footer>
+
+<script>
+  const SUPABASE_URL = 'https://yxzxlyxtxysynbimpins.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4enhseXh0eHlzeW5iaW1waW5zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2MzI4MDMsImV4cCI6MjA5NDIwODgwM30.l8GMu54hozDFL8kLA4_LJcm0sLSTEgArMpQ1GK3Tbgo';
+  const API_BASE = `${SUPABASE_URL}/rest/v1`;
+  const headers = { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` };
+  const SERVER_IP = 'play.snipernetwork.top';
+
+  const mockPlayers = [
+  ];
+
+  /* Premium + Cracked Skin Engine */
+  function applySkinToElement(imgElement, username) {
+    const cleanName = username.trim().replace(/[^a-zA-Z0-9_]/g, '');
+    const fallback = `https://mc-heads.net/avatar/Steve/48`;
+    const srUrl = `https://api.skinsrestorer.net/v1/skin/${cleanName}/avatar.png`;
+    const standardUrl = `https://mc-heads.net/avatar/${cleanName}/48`;
+
+    const img = new Image();
+    img.onload = function() { imgElement.src = srUrl; };
+    img.onerror = function() {
+      const fallbackImg = new Image();
+      fallbackImg.onload = function() { imgElement.src = standardUrl; };
+      fallbackImg.onerror = function() { imgElement.src = fallback; };
+      fallbackImg.src = standardUrl;
+    };
+    img.src = srUrl;
+  }
+
+  function getPlayerTitle(points) {
+    if (points >= 300) return 'Combat Master';
+    if (points >= 200) return 'Combat Ace';
+    if (points >= 150) return 'Combat Specialist';
+    if (points >= 100) return 'Combat Specialist';
+    if (points >= 60)  return 'Combat Cadet';
+    if (points >= 30)  return 'Combat Novice';
+    return 'Rookie';
+  }
+
+  async function loadTopPlayers() {
+    let players = [];
+    try {
+      const res = await fetch(`${API_BASE}/players?select=username,points,region&order=points.desc.nullslast&limit=3`, { headers });
+      const data = await res.json();
+      players = (data && data.length > 0) ? data : mockPlayers;
+    } catch(e) { players = mockPlayers; }
+
+    document.getElementById('statPlayers').innerHTML = `<span>${players.length > 3 ? players.length : '100+'}</span>`;
+
+    const list = document.getElementById('topPlayersList');
+    list.innerHTML = players.slice(0,3).map((p, i) => {
+      const reg = (p.region || 'NA').toUpperCase();
+      const skinId = `skin-home-${p.username}`;
+      return `<a href="index.html" class="top-player-card rank-${i+1}" style="animation-delay:${i*80}ms">
+        <span class="tp-rank">${i+1}.</span>
+        <img id="${skinId}" class="tp-skin" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36'><rect width='36' height='36' fill='%230d111a'/></svg>" alt="${p.username}" loading="lazy">
+        <div class="tp-info">
+          <div class="tp-name">${p.username}</div>
+          <div class="tp-pts">${getPlayerTitle(p.points||0)} &nbsp;<span style="color:#47546a">(${p.points||0} points)</span></div>
+        </div>
+        <span class="tp-region">${reg}</span>
+      </a>`;
+    }).join('');
+
+    // Trigger async skin loaders
+    players.slice(0,3).forEach(p => {
+      setTimeout(() => {
+        const el = document.getElementById(`skin-home-${p.username}`);
+        if (el) applySkinToElement(el, p.username);
+      }, 0);
+    });
+
+    // Fetch absolute exact player numbers
+    try {
+      const res2 = await fetch(`${API_BASE}/players?select=count`, { headers: {...headers, 'Prefer': 'count=exact'} });
+      const countHeader = res2.headers.get('content-range');
+      if (countHeader) {
+        const total = countHeader.split('/')[1];
+        if (total && !isNaN(total)) {
+          document.getElementById('statPlayers').innerHTML = `<span>${total}</span>`;
+        }
+      }
+    } catch(e) {}
+  }
+
+  function copyIP() { navigator.clipboard.writeText(SERVER_IP); showToast('IP Copied to clipboard!'); }
+  function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
+
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    });
+  });
+
+  loadTopPlayers();
+</script>
+</body>
+</html>

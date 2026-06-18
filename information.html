@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Information - Zynther Tiers</title>
+<link rel="icon" href="ZyntherTier.png" type="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  /* Use the same :root and body styles as index.html for consistency */
+  :root { --bg: #10151e; --surface: #141a26; --surface2: #1e2536; --primary: #5294e2; --text: #b0b9c6; --white: #ffffff; }
+  body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
+  
+  /* Header matches index.html */
+  header { background: rgba(20, 26, 38, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--surface2); padding: 0 24px; position: sticky; top: 0; }
+  .nav-container { max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--white); font-weight: 800; }
+  .nav-links a { color: var(--text); text-decoration: none; margin-left: 20px; font-size: 14px; }
+  .nav-links a.nav-active { color: var(--primary); }
+
+  /* Info Page Content */
+  .page-layout { max-width: 800px; margin: 40px auto; padding: 24px; }
+  h1 { color: var(--white); margin-bottom: 20px; }
+  h2 { color: var(--primary); margin-top: 30px; margin-bottom: 15px; font-size: 18px; }
+  p { line-height: 1.6; margin-bottom: 15px; }
+  .info-box { background: var(--surface); border: 1px solid var(--surface2); padding: 20px; border-radius: 8px; }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav-container">
+    <a href="index.html">
+<img src="ZyntherTiersBd.png" width="300">
+    <div class="nav-links">
+      <a href="home.html"><i class="fas fa-home"></i> <span>Home</span></a>
+      <a href="index.html" class="nav-active"><i class="fas fa-trophy"></i> <span>Rankings</span></a>
+      <a href="information.html"><i class="fas fa-info-circle"></i> <span>Information</span></a>
+    </div>
+  </nav>
+</header>
+
+<div class="page-layout">
+  <div class="info-box">
+    <h1>About Zynther Tiers</h1>
+    <p>Zynther Tiers is the definitive ranking system designed for the competitive Minecraft PvP community. We track performance across various game modes to provide accurate, real-time standings.</p>
+    
+    <h2>How it Works</h2>
+    <p>Players are ranked based on their total points, which are calculated through our custom API integration. Rankings are updated automatically as you play on our servers.</p>
+    
+    <h2>Tier System</h2>
+    <p>We use a tiered classification system (HT1 - HT5 for High Tiers, LT1 - LT5 for Low Tiers) to categorize player skill levels across different disciplines like UHC, Pot, and NethOP.</p>
+    
+    <h2>Support</h2>
+    <p>Need help or want to report an issue? Join our <a href="https://discord.gg/WuDdJGpwEX" style="color: var(--primary);">Discord server</a> to speak with our staff team.</p>
+  </div>
+</div>
+</body>
+</html>

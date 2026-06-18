@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zynther Tiers - Live Minecraft PvP Rankings</title>
+<meta name="description" content="Zynther Tiers is the definitive ranking system for Minecraft PvP players.">
+<link rel="icon" href="ZyntherTier.png" type="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  :root { 
+    --bg: #10151e; 
+    --surface: #141a26; 
+    --surface2: #1e2536; 
+    --primary: #0099ff; 
+    --primary2: #000000; 
+    --text: #b0b9c6; 
+    --text2: #6c7a91; 
+    --white: #ffffff; 
+    --discord: #006eff; 
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', sans-serif; }
+  body { 
+    background-color: var(--bg); 
+    color: var(--text); 
+    min-height: 100vh; 
+    background-image: radial-gradient(circle at 50% -20%, #172237 0%, #10151e 70%);
+    background-attachment: fixed; 
+  }
+
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+  .animate-row { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
+  .animate-card { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
+
+  /* ── HEADER ── */
+  header { background: rgba(20, 26, 38, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--surface2); padding: 0 24px; position: sticky; top: 0; z-index: 100; }
+  .nav-container { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--primary), var(--primary2)); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--white); font-weight: bold; font-size: 14px; }
+  .logo-text { font-size: 20px; font-weight: 800; color: var(--white); letter-spacing: -0.5px; }
+  .logo-text span { color: var(--primary); }
+  .nav-links { display: flex; gap: 20px; align-items: center; }
+  .nav-links a { color: var(--text2); text-decoration: none; font-weight: 500; font-size: 14px; transition: color 0.2s; display: flex; align-items: center; gap: 6px; }
+  .nav-links a:hover { color: var(--primary); }
+  .nav-active { color: var(--primary) !important; }
+  .nav-ip { display: flex; align-items: center; gap: 6px; background: rgba(82,148,226,0.1); padding: 6px 14px; border-radius: 6px; border: 1px solid var(--surface2); cursor: pointer; transition: all 0.2s; }
+  .nav-ip:hover { background: rgba(82,148,226,0.2); border-color: var(--primary2); }
+  .nav-ip-label { color: var(--text2); font-size: 11px; font-weight: 600; }
+  .nav-ip-addr { color: var(--primary); font-family: monospace; font-weight: 700; font-size: 13px; }
+
+  /* ── LAYOUT ── */
+  .page-layout { max-width: 1000px; margin: 0 auto; padding: 24px; }
+  .main-content { min-width: 0; }
+
+  /* ── ANNOUNCEMENT ── */
+  .announcement { background: linear-gradient(135deg, rgba(82,148,226,0.08), rgba(53,105,168,0.03)); border: 1px solid var(--surface2); border-radius: 8px; padding: 16px 20px; margin-bottom: 24px; display: flex; gap: 12px; animation: fadeIn 0.5s ease-out; }
+  .ann-icon { color: var(--primary); font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+  .ann-content h3 { color: var(--primary); font-size: 14px; margin-bottom: 4px; }
+  .ann-content p { font-size: 13px; line-height: 1.4; color: var(--text); }
+
+  /* ── SERVER IP & DISCORD BOXES ── */
+  .info-boxes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; animation: fadeIn 0.6s ease-out; }
+  .server-ip-box { background: var(--surface); border: 1px solid var(--surface2); border-radius: 8px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .discord-box { background: linear-gradient(135deg, var(--surface), rgba(88, 101, 242, 0.05)); border: 1px solid var(--surface2); border-radius: 8px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; transition: border-color 0.2s; }
+  .discord-box:hover { border-color: rgba(88, 101, 242, 0.4); }
+  .ip-info h3 { color: var(--white); font-size: 15px; margin-bottom: 2px; display: flex; align-items: center; gap: 8px; }
+  .ip-info p { color: var(--text2); font-size: 12px; }
+  .ip-copy-container { display: flex; align-items: center; gap: 8px; background: var(--bg); padding: 6px 12px; border-radius: 6px; border: 1px solid var(--primary2); }
+  .discord-link-container { display: flex; align-items: center; gap: 8px; background: var(--bg); padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(88, 101, 242, 0.4); }
+  .ip-text { color: var(--primary); font-family: monospace; font-weight: 700; font-size: 14px; }
+  .discord-text { color: var(--white); font-family: monospace; font-weight: 700; font-size: 14px; }
+  .copy-btn { background: var(--primary2); color: var(--white); border: none; padding: 6px 12px; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 12px; transition: background 0.2s, transform 0.1s; }
+  .copy-btn:hover { background: var(--primary); }
+  .copy-btn:active { transform: scale(0.95); }
+  .join-btn { background: var(--discord); color: var(--white); border: none; padding: 6px 14px; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 12px; text-decoration: none; transition: background 0.2s, transform 0.1s; }
+  .join-btn:hover { background: #4752C4; }
+  .join-btn:active { transform: scale(0.95); }
+
+  /* ── SEARCH BAR ── */
+  .search-wrap { position: relative; margin-bottom: 20px; animation: fadeIn 0.5s ease-out; }
+  .search-bar { width: 100%; background: var(--surface); border: 1px solid var(--surface2); border-radius: 8px; padding: 12px 44px 12px 44px; color: var(--white); font-size: 14px; font-weight: 500; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+  .search-bar::placeholder { color: var(--text2); }
+  .search-bar:focus { border-color: var(--primary2); box-shadow: 0 0 0 3px rgba(82,148,226,0.08); }
+  .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text2); font-size: 15px; pointer-events: none; transition: color 0.2s; }
+  .search-bar:focus ~ .search-icon { color: var(--primary); }
+  .search-clear { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: var(--surface2); border: none; color: var(--text2); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 12px; display: none; align-items: center; justify-content: center; transition: all 0.15s; }
+  .search-clear:hover { background: var(--primary2); color: var(--white); }
+  .search-clear.visible { display: flex; }
+
+  /* ── TABS ── */
+  .tabs { display: flex; gap: 6px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; }
+  .tabs::-webkit-scrollbar { height: 4px; }
+  .tabs::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 2px; }
+  .tab-btn { background: var(--surface); color: var(--text2); border: 1px solid var(--surface2); padding: 10px 14px 8px; border-radius: 8px; cursor: pointer; font-size: 10px; font-weight: 700; transition: all 0.2s; white-space: nowrap; display: flex; flex-direction: column; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px; min-width: 72px; }
+  .tab-btn:hover { background: var(--surface2); color: var(--white); transform: translateY(-2px); border-color: var(--primary2); }
+  .tab-btn.active { background: linear-gradient(135deg, rgba(82,148,226,0.15), rgba(53,105,168,0.08)); color: var(--primary); border-color: var(--primary2); box-shadow: 0 4px 16px rgba(82,148,226,0.1); }
+  .tab-btn img { width: 28px; height: 28px; vertical-align: middle; transition: transform 0.2s; }
+  .tab-btn:hover img { transform: scale(1.1); }
+  .tab-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* ── OVERALL TABLE ── */
+  .lb-table { width: 100%; border-collapse: collapse; background: transparent; border-radius: 10px; overflow: hidden; }
+  .lb-table thead tr { background: transparent; }
+  .lb-table th { color: #515f75; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--surface2); }
+  .lb-table td { padding: 0; border-bottom: 1px solid #141a26; vertical-align: middle; }
+  .lb-table tr:last-child td { border-bottom: none; }
+  .lb-table tbody tr { transition: background 0.15s; }
+  .lb-table tbody tr:hover { background: rgba(255,255,255,0.02) !important; }
+
+  /* rank rows — left accent + tinted bg */
+  .rank-row-1 { background: rgba(255,193,7,0.05) !important; }
+  .rank-row-2 { background: rgba(176,190,197,0.04) !important; }
+  .rank-row-3 { background: rgba(255,152,0,0.04) !important; }
+
+  /* ── ROW INNER WRAPPER ── */
+  .lb-row { display: flex; align-items: center; gap: 0; min-height: 72px; cursor: pointer; padding: 0; }
+  .lb-row:hover .p-name { color: var(--primary); }
+
+  /* rank number cell */
+  .lb-rank { min-width: 52px; padding: 0 12px; text-align: center; flex-shrink: 0; }
+  .lb-rank-num { font-size: 22px; font-weight: 900; font-style: italic; color: #47546a; line-height: 1; }
+  .rank-row-1 .lb-rank-num { color: #ffc107; }
+  .rank-row-2 .lb-rank-num { color: #b0bec5; }
+  .rank-row-3 .lb-rank-num { color: #ff9800; }
+
+  /* skin banner */
+  .lb-skin-wrap { width: 64px; height: 72px; flex-shrink: 0; overflow: hidden; position: relative; background: #0d111a; }
+  .lb-skin-wrap.gold   { background: linear-gradient(180deg, #3a2e00 0%, #10151e 100%); }
+  .lb-skin-wrap.silver { background: linear-gradient(180deg, #1e2428 0%, #10131a 100%); }
+  .lb-skin-wrap.bronze { background: linear-gradient(180deg, #2e1a00 0%, #10131a 100%); }
+  .mc-skin { width: 64px; height: 72px; image-rendering: pixelated; object-fit: cover; object-position: top; display: block; }
+
+  /* player info */
+  .lb-info { flex: 1; min-width: 0; padding: 0 14px; }
+  .p-name { font-weight: 700; color: #fff; font-size: 15px; transition: color 0.15s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .p-title { font-size: 11px; color: #6c7a91; font-weight: 600; display: flex; align-items: center; gap: 5px; margin-top: 3px; }
+  .p-title img { width: 14px; height: 14px; }
+
+  /* region pill */
+  .region-badge { padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 800; letter-spacing: 0.5px; flex-shrink: 0; margin-right: 12px; }
+  .r-na { background: #1a2e1a; color: #4caf50; }
+  .r-eu { background: #2e1a00; color: #ff9800; }
+  .r-as { background: #001a2e; color: #03a9f4; }
+  .r-au { background: #0d1a2e; color: #3f51b5; }
+  .r-sa { background: #2e0d00; color: #ff5722; }
+  .r-me { background: #1a1a00; color: #cddc39; }
+  .r-af { background: #1a0000; color: #f44336; }
+
+  /* tier icon badges */
+  .tier-tags { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 12px 0 0; align-items: center; }
+  .tier-badge { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .tier-badge-icon { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid transparent; }
+  .tier-badge-icon img { width: 20px; height: 20px; }
+  .tier-badge-label { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; }
+  /* HT colours */
+  .tb-ht1 .tier-badge-icon { background: rgba(255,87,34,0.18); border-color: #ff572230; }
+  .tb-ht1 .tier-badge-label { color: #ff5722; }
+  .tb-ht2 .tier-badge-icon { background: rgba(255,152,0,0.18); border-color: #ff980030; }
+  .tb-ht2 .tier-badge-label { color: #ff9800; }
+  .tb-ht3 .tier-badge-icon { background: rgba(255,193,7,0.18); border-color: #ffc10730; }
+  .tb-ht3 .tier-badge-label { color: #ffc107; }
+  .tb-ht4 .tier-badge-icon { background: rgba(139,195,74,0.18); border-color: #8bc34a30; }
+  .tb-ht4 .tier-badge-label { color: #8bc34a; }
+  /* LT colours */
+  .tb-lt1 .tier-badge-icon { background: rgba(76,175,80,0.18); border-color: #4caf5030; }
+  .tb-lt1 .tier-badge-label { color: #4caf50; }
+  .tb-lt2 .tier-badge-icon { background: rgba(33,150,243,0.18); border-color: #2196f330; }
+  .tb-lt2 .tier-badge-label { color: #2196f3; }
+  .tb-lt3 .tier-badge-icon { background: rgba(103,58,183,0.18); border-color: #673ab730; }
+  .tb-lt3 .tier-badge-label { color: #673ab7; }
+  .tb-lt4 .tier-badge-icon { background: rgba(63,81,181,0.18); border-color: #3f51b530; }
+  .tb-lt4 .tier-badge-label { color: #3f51b5; }
+  /* empty slot */
+  .tb-empty .tier-badge-icon { background: transparent; border: 2px dashed #232936; }
+  .tb-empty .tier-badge-label { color: #353f52; }
+
+  /* ── TIER COLUMNS ── */
+  .tier-columns { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; align-items: start; }
+  @media(max-width: 900px) { .tier-columns { grid-template-columns: repeat(3, 1fr); } }
+  @media(max-width: 600px) { .tier-columns { grid-template-columns: repeat(2, 1fr); } }
+
+  .tier-col { border-radius: 10px; overflow: hidden; border: 1px solid var(--surface2); }
+
+  /* column headers */
+  .tier-col-header { padding: 12px 10px; text-align: center; font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; border-bottom: 1px solid var(--surface2); }
+  .tier-col-1 .tier-col-header { background: linear-gradient(135deg, #2a2000, #141a26); color: #ffc107; }
+  .tier-col-2 .tier-col-header { background: linear-gradient(135deg, #1e2536, #141a26); color: #c0c0c0; }
+  .tier-col-3 .tier-col-header { background: linear-gradient(135deg, #1e1500, #141a26); color: #cd7f32; }
+  .tier-col-4 .tier-col-header { background: #141a26; color: #8b8fa3; }
+  .tier-col-5 .tier-col-header { background: #141a26; color: #6b6f82; }
+
+  /* player rows inside column */
+  .tier-col-body { background: #141a26; }
+  .tier-player-row { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-bottom: 1px solid var(--surface2); cursor: pointer; transition: background 0.15s; }
+  .tier-player-row:last-child { border-bottom: none; }
+  .tier-player-row:hover { background: rgba(255,255,255,0.04); }
+  .tier-player-row:hover .tier-player-name { color: var(--primary); }
+  .tier-player-avatar { width: 28px; height: 28px; image-rendering: pixelated; border-radius: 4px; flex-shrink: 0; background: #1e2536; }
+  .tier-player-name { font-size: 13px; font-weight: 600; color: #dde; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: color 0.15s; }
+  .tier-player-arrow { color: #353f52; font-size: 11px; flex-shrink: 0; }
+
+  /* ── LTM ── */
+  .ltm-container { background: var(--surface); border: 1px solid var(--surface2); border-radius: 12px; padding: 60px 40px; text-align: center; animation: fadeInUp 0.5s ease-out; }
+  .ltm-icon { margin-bottom: 24px; animation: float 3s ease-in-out infinite; }
+  .ltm-icon img { width: 72px; height: 72px; }
+  .ltm-container h2 { color: var(--white); font-size: 26px; font-weight: 800; margin-bottom: 12px; }
+  .ltm-container p { color: var(--text2); font-size: 15px; line-height: 1.7; max-width: 480px; margin: 0 auto; }
+
+  /* ── PROFILE MODAL ── */
+  .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(6px); }
+  .modal-overlay.active { display: flex; animation: fadeIn 0.15s ease-out; }
+  .modal-box { background: #141a26; border: 1px solid var(--surface2); border-radius: 18px; width: 400px; max-width: 96vw; overflow: hidden; padding: 0; animation: scaleIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; position: relative; }
+
+  /* close button — top-right circle */
+  .modal-banner { display: none; }
+  .close-modal { position: absolute; top: 14px; right: 14px; background: #1e2536; border: none; color: #aaa; width: 34px; height: 34px; border-radius: 50%; font-size: 15px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; transition: background 0.2s, color 0.2s; }
+  .close-modal:hover { background: #e53935; color: #fff; }
+
+  /* avatar + name header */
+  .profile-header { text-align: center; padding: 36px 24px 20px; border-bottom: 1px solid var(--surface2); }
+  .profile-avatar { width: 88px; height: 88px; image-rendering: pixelated; border-radius: 50%; border: 3px solid #1e2536; margin-bottom: 12px; background: #10151e; display: block; margin-left: auto; margin-right: auto; transition: transform 0.3s; }
+  .profile-avatar:hover { transform: scale(1.08); }
+  .profile-username { font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 10px; letter-spacing: -0.3px; }
+  .profile-badges { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+
+  /* title badge pill */
+  .p-badge { display: inline-flex; align-items: center; gap: 7px; padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: 0.3px; }
+  .p-badge img { width: 18px; height: 18px; }
+  .badge-master    { background: linear-gradient(135deg, #ffc107, #ff9800); color: #000; }
+  .badge-ace       { background: linear-gradient(135deg, #03a9f4, #2196f3); color: #fff; }
+  .badge-specialist{ background: linear-gradient(135deg, #ab47bc, #7b1fa2); color: #fff; }
+  .badge-cadet     { background: linear-gradient(135deg, #26a69a, #00695c); color: #fff; }
+  .badge-novice    { background: linear-gradient(135deg, #66bb6a, #388e3c); color: #fff; }
+  .badge-rookie    { background: rgba(255,255,255,0.08); color: #ccc; border: 1px solid #232936; }
+  .badge-region    { background: none; color: var(--text2); font-size: 12px; font-weight: 500; border: none; padding: 0; gap: 5px; }
+  .badge-namemc    { background: #1e2536; color: #aaa; border: 1px solid #232936; font-size: 11px; }
+  .badge-namemc img { width: 14px; height: 14px; border-radius: 2px; }
+
+  /* premium and crack status types */
+  .badge-premium   { background: rgba(46, 204, 113, 0.15); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.3); font-size: 11px; }
+  .badge-crack     { background: rgba(231, 76, 60, 0.15); color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.3); font-size: 11px; }
+
+  /* body */
+  .profile-body { padding: 18px 20px 22px; }
+
+  /* POSITION row */
+  .stat-label { font-size: 10px; font-weight: 800; color: #4b586e; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+  .profile-stat-box { background: #0d111a; border: 1px solid var(--surface2); border-radius: 10px; padding: 12px 16px; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+  .stat-rank-num { font-size: 26px; font-weight: 900; color: #fff; font-style: italic; white-space: nowrap; }
+  .stat-rank-sep { color: #4b586e; font-size: 20px; font-weight: 300; }
+  .stat-rank-detail { display: flex; align-items: center; gap: 8px; }
+  .stat-rank-detail .trophy { font-size: 18px; }
+  .stat-rank-label { font-size: 13px; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-rank-pts { font-size: 12px; color: #6c7a91; font-weight: 600; }
+
+  /* TIERS grid */
+  .profile-tiers-title { font-size: 10px; font-weight: 800; color: #4b586e; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; }
+  .profile-tiers-list { background: #0d111a; border: 1px solid var(--surface2); border-radius: 10px; padding: 14px 16px; display: flex; gap: 0; }
+  .p-tier-slot { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+  .p-tier-slot-icon { width: 36px; height: 36px; border-radius: 50%; background: #1e2536; border: 2px dashed #2d384d; display: flex; align-items: center; justify-content: center; transition: border-color 0.2s; }
+  .p-tier-slot-icon.has-tier { border-style: solid; border-color: #3f4e6b; background: #232b3d; }
+  .p-tier-slot-icon img { width: 22px; height: 22px; }
+  .p-tier-slot-label { font-size: 10px; font-weight: 700; color: #4b586e; text-transform: uppercase; }
+  .p-tier-slot-label.has-tier { color: var(--primary); }
+
+  .toast { position: fixed; bottom: -60px; left: 50%; transform: translateX(-50%); background: var(--primary); color: var(--white); padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 700; z-index: 2000; transition: bottom 0.3s ease; }
+  .toast.show { bottom: 40px; }
+  .loading-box { text-align: center; padding: 60px; color: var(--text2); }
+  .empty-state { text-align: center; padding: 60px; color: var(--text2); }
+
+  footer { text-align: center; padding: 24px; color: var(--text2); font-size: 12px; border-top: 1px solid var(--surface2); margin-top: 40px; }
+  footer a { color: var(--primary); text-decoration: none; }
+  .footer-api { margin-top: 4px; font-size: 11px; }
+
+  @media(max-width:768px) { .info-boxes-grid { grid-template-columns: 1fr; } }
+  @media(max-width:600px) { .lb-table th:nth-child(3),.lb-table td:nth-child(3) { display:none; } .nav-links a span { display:none; } }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav-container">
+    <a href="zynthertiers.png" class="logo">
+      <div class=""></div>
+      <img src="ZyntherTiersBd.png" width="300">
+      <div class="logo-text"><span></span></div>
+    </a>
+    <div class="nav-links">
+      <a href="home.html"><i class="fas fa-home"></i> <span>Home</span></a>
+      <a href="index.html"><i class="fas fa-trophy"></i> <span>Rankings</span></a>
+      <a href="api.html" class="nav-active"><i class="fas fa-book"></i> API Docs</a>
+      <a href="discord.html" class="nav-active"><i class="fab fa-discord"></i> <span>Discord</span></a>
+      <a href="information.html"><i class="fas fa-info-circle"></i> <span>Information</span></a>
+    </div>
+  </nav>
+</header>
+
+<div class="page-layout">
+  <div class="main-content">
+    <section class="announcement">
+      <div class="ann-content">
+        <h3>Live Custom API Integration!</h3>
+        <p></p>
+      </div>
+    </section>
+
+    <div class="info-boxes-grid">
+      <section class="server-ip-box">
+        <div class="ip-info">
+          <h3><i class="fas fa-server"></i> SERVER IP</h3>
+          <p>Join the server & start climbing</p>
+        </div>
+        <div class="ip-copy-container">
+          <span class="ip-text">Comming Soon</span>
+          <button class="copy-btn" onclick="copyIP()">Copy</button>
+        </div>
+      </section>
+
+      <section class="discord-box">
+        <div class="ip-info">
+          <h3><i class="fab fa-discord" style="color: var(--discord);"></i> DISCORD</h3>
+          <p>Link your stats & sync tier roles</p>
+        </div>
+        <div class="discord-link-container">
+          <span class="discord-text">discord.gg/WuDdJGpwEX</span>
+          <a href="https://discord.gg/WuDdJGpwEX" target="_blank" class="join-btn">Join</a>
+        </div>
+      </section>
+    </div>
+
+    <nav class="tabs" id="tabContainer"></nav>
+
+    <div class="search-wrap">
+      <input type="text" class="search-bar" id="searchBar" placeholder="Search player..." oninput="handleSearch()">
+      <i class="fas fa-search search-icon"></i>
+      <button class="search-clear" id="searchClear" onclick="clearSearch()"><i class="fas fa-times"></i></button>
+    </div>
+
+    <section id="contentArea"><div class="loading-box"><i class="fas fa-spinner fa-spin"></i> Loading API Data...</div></section>
+  </div>
+</div>
+
+<div class="modal-overlay" id="profileModal">
+  <div class="modal-box">
+    <button class="close-modal" onclick="closeProfile()"><i class="fas fa-times"></i></button>
+    <div class="profile-header">
+      <img id="profileAvatar" class="profile-avatar" src="" alt="Avatar">
+      <div id="profileUsername" class="profile-username"></div>
+      <div id="profileBadges" class="profile-badges"></div>
+    </div>
+    <div class="profile-body">
+      <div class="stat-label">Position</div>
+      <div id="profilePosition" class="profile-stat-box"></div>
+      <div class="profile-tiers-title">Tiers</div>
+      <div id="profileTiers" class="profile-tiers-list"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">IP Copied!</div>
+<footer>
+  <p>&copy; 2026 Zynther Tiers. All rights reserved.</p>
+</footer>
+
+<script>
+  const SUPABASE_URL = 'https://bdvqeqesjbrtvtphrtru.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkdnFlcWVzamJydHZ0cGhydHJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNjE4MzEsImV4cCI6MjA5NjgzNzgzMX0.timXkP4DcIOtQnS2np3YWME_o8m5iq_DrFbKPCHl5vA';
+
+  const API_BASE = `${SUPABASE_URL}/rest/v1`;
+  const headers = { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` };
+  const SERVER_IP = 'play.snipernetwork.top';
+
+  /* ── COMBINED PREMIUM + CRACKED SKIN RENDERING ── */
+  function applySkinToElement(imgElement, username, type = 'avatar') {
+    const cleanName = username.trim().replace(/[^a-zA-Z0-9_]/g, '');
+    
+    const fallback = type === 'avatar' 
+      ? `https://mc-heads.net/avatar/Steve/48`
+      : `https://mc-heads.net/head/Steve/128`;
+
+    const srUrl = type === 'avatar'
+      ? `https://api.skinsrestorer.net/v1/skin/${cleanName}/avatar.png`
+      : `https://api.skinsrestorer.net/v1/skin/${cleanName}/head.png`;
+
+    const standardUrl = type === 'avatar'
+      ? `https://mc-heads.net/avatar/${cleanName}/48`
+      : `https://mc-heads.net/head/${cleanName}/128`;
+
+    const img = new Image();
+    img.onload = function() { imgElement.src = srUrl; };
+    img.onerror = function() {
+      const fallbackImg = new Image();
+      fallbackImg.onload = function() { imgElement.src = standardUrl; };
+      fallbackImg.onerror = function() { imgElement.src = fallback; };
+      fallbackImg.src = standardUrl;
+    };
+    img.src = srUrl;
+  }
+
+  /* ── SVG ICON MAPS ── */
+  const catIcons = {
+    overall: '<img src="overall.svg" width="28" height="28" alt="Overall">',
+    vanilla: '<img src="vanilla.svg" width="28" height="28" alt="Vanilla">',
+    uhc:     '<img src="uhc.svg" width="28" height="28" alt="UHC">',
+    pot:     '<img src="pot.svg" width="28" height="28" alt="Pot">',
+    nethop:  '<img src="nethop.svg" width="28" height="28" alt="NethOP">',
+    smp:     '<img src="smp.svg" width="28" height="28" alt="SMP">',
+    sword:   '<img src="sword.svg" width="28" height="28" alt="Sword">',
+    axe:     '<img src="axe.svg" width="28" height="28" alt="Axe">',
+    mace:    '<img src="mace.svg" width="28" height="28" alt="Mace">',
+    ltm:     '<img src="2v2.svg" width="28" height="28" alt="LTMs">'
+  };
+
+  const catTags = {
+    overall: '<img src="overall.svg" width="20" height="20" alt="Overall">',
+    vanilla: '<img src="vanilla.svg" width="20" height="20" alt="Vanilla">',
+    uhc:     '<img src="uhc.svg" width="20" height="20" alt="UHC">',
+    pot:     '<img src="pot.svg" width="20" height="20" alt="Pot">',
+    nethop:  '<img src="nethop.svg" width="20" height="20" alt="NethOP">',
+    smp:     '<img src="smp.svg" width="20" height="20" alt="SMP">',
+    sword:   '<img src="sword.svg" width="20" height="20" alt="Sword">',
+    axe:     '<img src="axe.svg" width="20" height="20" alt="Axe">',
+    mace:    '<img src="mace.svg" width="20" height="20" alt="Mace">'
+  };
+
+  const catModal = {
+    overall: '<img src="overall.svg" width="16" height="16" alt="Overall">',
+    vanilla: '<img src="vanilla.svg" width="16" height="16" alt="Vanilla">',
+    uhc:     '<img src="uhc.svg" width="16" height="16" alt="UHC">',
+    pot:     '<img src="pot.svg" width="16" height="16" alt="Pot">',
+    nethop:  '<img src="nethop.svg" width="16" height="16" alt="NethOP">',
+    smp:     '<img src="smp.svg" width="16" height="16" alt="SMP">',
+    sword:   '<img src="sword.svg" width="16" height="16" alt="Sword">',
+    axe:     '<img src="axe.svg" width="16" height="16" alt="Axe">',
+    mace:    '<img src="mace.svg" width="16" height="16" alt="Mace">'
+  };
+
+  const dbCategories = ['vanilla','uhc','pot','nethop','smp','sword','axe','mace'];
+  const regionNames = { 'NA':'North America', 'EU':'Europe', 'AS':'Asia', 'AU':'Australia', 'SA':'South America', 'ME':'Middle East', 'AF':'Africa' };
+
+  let activeTab = 'overall';
+  let allPlayersCache = [];
+
+  const mockTopPlayers = [];
+
+  function init() { renderTabs(); renderContent(); }
+
+  function renderTabs() {
+    const tabs = document.getElementById('tabContainer');
+    const categories = ['overall', ...dbCategories, 'ltm'];
+    tabs.innerHTML = categories.map(cat => {
+      const name = cat === 'ltm' ? 'LTMs' : cat.charAt(0).toUpperCase() + cat.slice(1);
+      return `<button class="tab-btn ${cat === activeTab ? 'active' : ''}" onclick="switchTab('${cat}')">${catIcons[cat] || ''}<span class="tab-label">${name}</span></button>`;
+    }).join('');
+  }
+
+  function switchTab(tab) { activeTab = tab; renderTabs(); renderContent(); }
+
+  function handleSearch() {
+    const bar = document.getElementById('searchBar');
+    const clear = document.getElementById('searchClear');
+    clear.classList.toggle('visible', bar.value.length > 0);
+    renderContent();
+  }
+
+  function clearSearch() {
+    document.getElementById('searchBar').value = '';
+    document.getElementById('searchClear').classList.remove('visible');
+    renderContent();
+  }
+
+  function getFilteredPlayers() {
+    const q = document.getElementById('searchBar').value.trim().toLowerCase();
+    if (!q) return allPlayersCache;
+    return allPlayersCache.filter(p => p.username.toLowerCase().includes(q));
+  }
+
+  async function renderContent() {
+    const content = document.getElementById('contentArea');
+    content.innerHTML = `<div class="loading-box"><i class="fas fa-spinner fa-spin"></i> Fetching ${activeTab} rankings...</div>`;
+
+    if (allPlayersCache.length === 0) {
+      try {
+        const res = await fetch(`${API_BASE}/players?select=*&order=points.desc.nullslast`, { headers });
+        let apiData = await res.json();
+        if (!apiData || apiData.length === 0) { allPlayersCache = mockTopPlayers; } else { allPlayersCache = apiData; }
+      } catch (e) { allPlayersCache = mockTopPlayers; }
+    }
+
+    if (activeTab === 'overall') { renderOverall(content); }
+    else if (activeTab === 'ltm') { renderLTM(content); }
+    else { renderCategory(content, activeTab); }
+  }
+
+  const titleIcons = {
+    combat_master:     'combat_master.webp',
+    combat_ace:        'combat_ace.webp',
+    combat_specialist: 'combat_specialist.svg',
+    combat_cadet:      'combat_cadet.svg',
+    combat_novice:     'combat_novice.svg',
+    rookie:            'rookie.svg'
+  };
+  function titleImg(key, size = 16) {
+    return `<img width="${size}" height="${size}" alt="${key}" src="${titleIcons[key]}" style="vertical-align:middle;image-rendering:auto" onerror="this.style.display='none'">`;
+  }
+  function getPlayerTitle(points) {
+    if (points >= 300) return { text: `${titleImg('combat_master')} Combat Master`,     icon: titleImg('combat_master', 50),     class: 'badge-master' };
+    if (points >= 200) return { text: `${titleImg('combat_ace')} Combat Ace`,           icon: titleImg('combat_ace', 50),        class: 'badge-ace' };
+    if (points >= 150) return { text: `${titleImg('combat_specialist')} Combat Specialist`, icon: titleImg('combat_specialist', 50), class: 'badge-specialist' };
+    if (points >= 100) return { text: `${titleImg('combat_specialist')} Combat Specialist`, icon: titleImg('combat_specialist', 50), class: 'badge-specialist' };
+    if (points >= 60)  return { text: `${titleImg('combat_cadet')} Combat Cadet`,       icon: titleImg('combat_cadet', 50),      class: 'badge-cadet' };
+    if (points >= 30)  return { text: `${titleImg('combat_novice')} Combat Novice`,     icon: titleImg('combat_novice', 50),     class: 'badge-novice' };
+    return               { text: `${titleImg('rookie')} Rookie`,                        icon: titleImg('rookie', 50),            class: 'badge-rookie' };
+  }
+
+  function renderOverall(container) {
+    const data = getFilteredPlayers();
+    if (!data || data.length === 0) { container.innerHTML = `<div class="empty-state"><h3>No Players Found</h3><p style="margin-top:8px;font-size:13px">Try a different search.</p></div>`; return; }
+
+    let html = `<table class="lb-table">
+      <thead><tr>
+        <th style="width:52px">#</th>
+        <th style="width:64px"></th>
+        <th>Player</th>
+        <th style="width:60px">Region</th>
+        <th>Tiers</th>
+      </tr></thead><tbody>`;
+
+    data.forEach((p, index) => {
+      const globalRank = allPlayersCache.findIndex(pl => pl.username === p.username) + 1;
+      const reg = (p.region || 'NA').toUpperCase();
+      const rowClass = globalRank <= 3 ? `rank-row-${globalRank}` : '';
+      const skinBg = globalRank === 1 ? 'gold' : globalRank === 2 ? 'silver' : globalRank === 3 ? 'bronze' : '';
+      const titleInfo = getPlayerTitle(p.points || 0);
+
+      let tierBadges = '';
+      dbCategories.forEach(cat => {
+        if (p[cat] && p[cat].trim() !== '') {
+          const tierStr = p[cat].toUpperCase();
+          const num = tierStr.replace(/[^0-9]/g, '');
+          const cls = `tb-${tierStr.startsWith('H') ? 'ht' : 'lt'}${num}`;
+          const iconHtml = catTags[cat] || '';
+          tierBadges += `<div class="tier-badge ${cls}">
+            <div class="tier-badge-icon">${iconHtml}</div>
+            <span class="tier-badge-label">${tierStr}</span>
+          </div>`;
+        } else {
+          tierBadges += `<div class="tier-badge tb-empty">
+            <div class="tier-badge-icon"></div>
+            <span class="tier-badge-label">–</span>
+          </div>`;
+        }
+      });
+
+      html += `<tr class="animate-row ${rowClass}" style="animation-delay:${index * 40}ms">
+        <td><div class="lb-rank"><span class="lb-rank-num">${globalRank}.</span></div></td>
+        <td style="padding:0;width:64px"><div class="lb-skin-wrap ${skinBg}">
+          <img id="skin-overall-${p.username}" class="mc-skin" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='72' viewBox='0 0 8 9'><rect width='8' height='9' fill='%230d111a'/></svg>" alt="${p.username}" loading="lazy">
+        </div></td>
+        <td style="padding:0 14px"><div onclick="openProfile('${p.username}')" style="cursor:pointer">
+          <div class="p-name">${p.username}</div>
+          <div class="p-title">${titleInfo.text}&nbsp;<span style="color:#47546a">(${p.points || 0} points)</span></div>
+        </div></td>
+        <td><span class="region-badge r-${reg.toLowerCase()}">${reg}</span></td>
+        <td><div class="tier-tags">${tierBadges}</div></td>
+      </tr>`;
+
+      setTimeout(() => {
+        const el = document.getElementById(`skin-overall-${p.username}`);
+        if (el) applySkinToElement(el, p.username, 'avatar');
+      }, 0);
+    });
+
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+  }
+
+  function renderCategory(container, catName) {
+    const data = getFilteredPlayers();
+    if (!data || data.length === 0) { container.innerHTML = `<div class="empty-state"><h3>No Players Found</h3></div>`; return; }
+
+    const tiers = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+    data.forEach(p => {
+      if (p[catName] && p[catName].trim() !== '') {
+        const val = p[catName].trim().toUpperCase();
+        if      (val === 'HT1') tiers[1].push(p);
+        else if (val === 'HT2') tiers[2].push(p);
+        else if (val === 'HT3') tiers[3].push(p);
+        else if (val === 'HT4') tiers[4].push(p);
+        else if (val.startsWith('LT')) tiers[5].push(p);
+      }
+    });
+
+    const tierLabels = { 1: 'Tier 1', 2: 'Tier 2', 3: 'Tier 3', 4: 'Tier 4', 5: 'Tier 5' };
+    const tierTrophies = { 1: '🏆', 2: '🏆', 3: '🏆', 4: '', 5: '' };
+
+    let hasAny = Object.values(tiers).some(arr => arr.length > 0);
+    if (!hasAny) { container.innerHTML = `<div class="empty-state"><h3>No ${catName} tiers found</h3></div>`; return; }
+
+    let html = `<div class="tier-columns">`;
+    for (let t = 1; t <= 5; t++) {
+      const players = tiers[t];
+      html += `<div class="tier-col tier-col-${t}">
+        <div class="tier-col-header">${tierTrophies[t] ? `<span>${tierTrophies[t]}</span>` : ''} ${tierLabels[t]}</div>
+        <div class="tier-col-body">`;
+
+      if (players.length === 0) {
+        html += `<div style="padding:20px;text-align:center;color:#353f52;font-size:12px">—</div>`;
+      } else {
+        players.forEach((p, i) => {
+          const skinId = `skin-cat-${t}-${p.username.replace(/[^a-z0-9]/gi,'_')}`;
+          html += `<div class="tier-player-row animate-row" style="animation-delay:${i*30}ms" onclick="openProfile('${p.username}')">
+            <img id="${skinId}" class="tier-player-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28'><rect width='28' height='28' fill='%231e2536'/></svg>" alt="${p.username}" loading="lazy">
+            <span class="tier-player-name">${p.username}</span>
+            <i class="fas fa-chevron-up tier-player-arrow"></i><i class="fas fa-chevron-up tier-player-arrow" style="margin-left:-6px"></i>
+          </div>`;
+          setTimeout(() => {
+            const el = document.getElementById(skinId);
+            if (el) applySkinToElement(el, p.username, 'avatar');
+          }, 0);
+        });
+      }
+
+      html += `</div></div>`;
+    }
+    html += `</div>`;
+    container.innerHTML = html;
+  }
+
+  function renderLTM(container) {
+    container.innerHTML = `<div class="ltm-container">
+      <div class="ltm-icon"><img src="/2v2.svg" width="72" height="72" alt="LTMs"></div>
+      <h2>Limited-Time Modes are coming!</h2>
+      <p>We are currently developing limited-time modes, which will include a team-based leaderboard. Stay tuned for more information!</p>
+    </div>`;
+  }
+
+  function openProfile(username) {
+    document.getElementById('profileUsername').innerText = username;
+    document.getElementById('profileAvatar').src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='128' height='128' viewBox='0 0 8 8'><rect width='8' height='8' fill='%2310151e'/></svg>";
+    applySkinToElement(document.getElementById('profileAvatar'), username, 'head');
+
+    document.getElementById('profileBadges').innerHTML = '<i class="fas fa-spinner fa-spin" style="color:var(--text2)"></i>';
+    document.getElementById('profilePosition').innerHTML = '';
+    document.getElementById('profileTiers').innerHTML = '';
+    document.getElementById('profileModal').classList.add('active');
+
+    try {
+      const p = allPlayersCache.find(player => player.username === username);
+      if (p) {
+        const pts = p.points || 0;
+        const titleInfo = getPlayerTitle(pts);
+        const regionFull = regionNames[p.region] || p.region || 'Unknown';
+        const overallRank = allPlayersCache.findIndex(player => player.username === username) + 1;
+
+        /* Check account type: default to premium unless specified as crack/cracked */
+        const accountType = (p.type || 'premium').toLowerCase();
+        let typeBadgeHtml = '';
+        if (accountType === 'crack' || accountType === 'cracked') {
+          typeBadgeHtml = `<span class="p-badge badge-crack"><i class="fas fa-unlink"></i> Cracked</span>`;
+        } else {
+          typeBadgeHtml = `<span class="p-badge badge-premium"><i class="fas fa-shield-check"></i> Premium</span>`;
+        }
+
+        document.getElementById('profileBadges').innerHTML = `
+          <span class="p-badge ${titleInfo.class}">${titleInfo.icon} ${titleInfo.text.replace(/^<img[^>]+>\s*/,'')}</span>
+          ${typeBadgeHtml}
+          <span class="p-badge badge-region"><i class="fas fa-globe-americas"></i> ${regionFull}</span>
+          <a class="p-badge badge-namemc" href="https://namemc.com/profile/${username}" target="_blank">
+            <img src="https://namemc.com/favicon.ico" alt="NameMC"> NameMC <i class="fas fa-external-link-alt" style="font-size:9px;opacity:0.6"></i>
+          </a>`;
+
+        document.getElementById('profilePosition').innerHTML = `
+          <span class="stat-rank-num">${overallRank}.</span>
+          <span class="stat-rank-sep">&nbsp;</span>
+          <span class="stat-rank-detail">
+            <span class="trophy">🏆</span>
+            <span class="stat-rank-label">Overall</span>
+            <span class="stat-rank-pts">(${pts} points)</span>
+          </span>`;
+
+        let tiersHtml = '';
+        dbCategories.forEach(cat => {
+          const val = p[cat] && p[cat].trim() !== '' ? p[cat].toUpperCase() : null;
+          const iconHtml = catModal[cat] || '';
+          const hasClass = val ? 'has-tier' : '';
+          tiersHtml += `
+            <div class="p-tier-slot">
+              <div class="p-tier-slot-icon ${hasClass}">${val ? iconHtml : ''}</div>
+              <span class="p-tier-slot-label ${hasClass}">${val || '–'}</span>
+            </div>`;
+        });
+        document.getElementById('profileTiers').innerHTML = tiersHtml;
+      } else {
+        document.getElementById('profileBadges').innerHTML = '<span class="p-badge badge-rookie">Unknown Player</span>';
+      }
+    } catch (e) {
+      document.getElementById('profileBadges').innerHTML = '<span style="color:red;">Error loading</span>';
+    }
+  }
+
+  function closeProfile() { document.getElementById('profileModal').classList.remove('active'); }
+  function copyIP() { navigator.clipboard.writeText(SERVER_IP); showToast("IP Copied to clipboard!"); }
+  function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
+  window.onclick = function(event) { if (event.target == document.getElementById('profileModal')) closeProfile(); }
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeProfile(); });
+  init();
+</script>
+</body>
+</html>
